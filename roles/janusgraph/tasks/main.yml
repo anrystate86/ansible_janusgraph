@@ -1,0 +1,81 @@
+---
+- name: Create directory
+  become: true
+  file:
+    path: "{{ install_path }}"
+    state: directory
+
+- name: Add group {{ janus_group }}
+  group:
+    name: "{{ janus_group }}"
+    state: present
+
+- name: Add user {{ janus_user }}
+  user:
+    name: "{{ janus_user }}"
+    state: present
+    createhome: false
+
+- name: Check for install
+  stat:
+    path: "{{ install_path }}/janusgraph/bin/gremlin-server.sh"
+  changed_when: false
+  register: janus_binary
+
+- when: not janus_binary.stat.exists
+  block:
+    - name: Unzip distrib
+      become: true
+      unarchive:
+        src: "{{ zip_download_url }}"
+        dest: "{{ install_path }}"
+        remote_src: yes
+        group: "{{ janus_group }}" 
+        owner: "{{ janus_user }}"
+
+    - name: Create link
+      become: true
+      file:
+        src: "{{ install_path }}/{{ dir_name }}"
+        path: "{{ install_path }}/janusgraph"
+        state: link
+        group: "{{ janus_group }}"
+        owner: "{{ janus_user }}"
+
+- name: Add bin files from full package
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ install_path }}/janusgraph/{{ item }}"
+    group: "{{ janus_group }}"
+    owner: "{{ janus_user }}"
+    mode: 0775
+  with_items:
+    - bin/janusgraph.sh
+
+- name: Set config to cassandra - elasticsearch 
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ install_path }}/janusgraph/{{ item }}"
+    group: "{{ janus_group }}"
+    owner: "{{ janus_user }}"
+  with_items:
+    - conf/gremlin-server/gremlin-server.yaml
+    - conf/gremlin-server/janusgraph-cql-es-server.properties
+
+- name: Add service
+  become: true
+  template:
+    src: janusgraph.service.j2
+    dest: /etc/systemd/system/janusgraph.service
+    mode: 0664
+
+- name: Add service to autostart
+  become: true
+  systemd:
+    daemon_reload: yes
+    name: janusgraph
+    enabled: yes
+    state: started
+
+
+

@@ -1,0 +1,9 @@
+---
+install_path: /opt
+zip_download_url: https://github.com/JanusGraph/janusgraph/releases/download/v0.5.2/janusgraph-0.5.2.zip
+dir_name: janusgraph-0.5.2
+janus_user: janusgraph
+janus_group: janusgraph
+environment_name: "janus_env"
+
+
