@@ -1,0 +1,11 @@
+---
+- name: Install JanusGraph
+  hosts: janusgraph
+  roles:
+    - role: janusgraph
+      environment_name: "my_janus"
+#      cassandra_cluster_name: "my_cluster"
+#      cassandra_replication: 1
+#      elasticsearch_replicas: 1
+#      storage.cassandra.read-consistency-level: "ONE"
+#      storage.cassandra.write-consistency-level: "ONE"

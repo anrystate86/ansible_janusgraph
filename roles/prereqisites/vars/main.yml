@@ -1,0 +1,9 @@
+---
+req_packages:
+  - epel-release
+  - ntp
+  - wget
+  - unzip
+  - java-1.8.0-openjdk
+  - java-1.8.0-openjdk-devel
+pre_dns: false

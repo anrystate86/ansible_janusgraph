@@ -1,0 +1,18 @@
+[Unit]
+Description=Apache TinkerPop Gremlin Server daemon
+Documentation=http://tinkerpop.apache.org/
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory={{ install_path }}/janusgraph
+ExecStart={{ install_path }}/janusgraph/bin/janusgraph.sh start
+ExecStop={{ install_path }}/janusgraph/bin/janusgraph.sh stop
+User={{ janus_user }}
+Group={{ janus_group }}
+Restart=always
+KillMode=process
+
+
+[Install]
+WantedBy=multi-user.target
